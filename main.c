@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <GLFW/glfw3.h>
+#include <GL/glew.h>
+#include <cglm/cglm.h>
+
 
 
 int main(){
@@ -41,6 +44,27 @@ int main(){
 
     GLuint programID = LoadShaders( "SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader" );
 
+    GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+    
+    mat4 Projection;
+    glm_perspective(glm_rad(45.0f), 4.0f/3.0f, 0.1f, 100.0f, Projection);
+
+    mat4 View;
+
+
+    glm_lookat((vec3){4, 3, 3}, (vec3){0, 0, 0}, (vec3){0, 1, 0}, View);
+
+
+    mat4 Model;
+
+    glm_mat4_identity(Model);
+
+
+
+    mat4 MVP = Projection * View * Model;
+
+
+
 
     static const GLfloat g_vertex_buffer_data[] = {
         -1.0f, -1.0f, 0.0f,
@@ -64,6 +88,8 @@ int main(){
 
             glUseProgram(programID);
 
+            glUniformMatrixfv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+
                         // 1st attribute buffer : vertices
             glEnableVertexAttribArray(0);
             glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -81,8 +107,16 @@ int main(){
             
             glfwSwapBuffers(window);
             glfwPollEvents();
-    }
+    }while( glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0 );
 
-    while( glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0 );
+    	// Cleanup VBO and shader
+	glDeleteBuffers(1, &vertexbuffer);
+	glDeleteProgram(programID);
+	glDeleteVertexArrays(1, &VertexArrayID);
 
+	// Close OpenGL window and terminate GLFW
+	glfwTerminate();
+
+	return 0;
+}
     
