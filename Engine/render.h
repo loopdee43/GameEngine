@@ -3,13 +3,13 @@
 
 typedef struct {} vec3d;
 
-void addObj(char* filename, char* objName, float[3] pos);
+void addObj(char* filename, char* objName, float pos[3]);
 
 void addTex(char* filename, char* objName);
 
-void rotateObj(char* objName, float angle, float[3] axis);
+void rotateObj(char* objName, float angle, float axis[3]);
 
-void addCam(char* camName, float[3] pos, float[3] direction);
+void addCam(char* camName, float pos[3], float direction[3]);
 
 void pushFrame();
 
